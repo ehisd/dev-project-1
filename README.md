@@ -23,10 +23,12 @@ To get Chattie up and running on your local development machine, follow the step
    git clone https://github.com/Xperienced-Tekie/dev-project-1.git
    cd chattie
 
+2. **Install the Dependency:** 
+
    ```bash
    yarn install
 
-   ```bash
-   yarn  start
+3. **Start server:** 
 
    ```bash
+   yarn start
