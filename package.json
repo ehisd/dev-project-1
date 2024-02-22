@@ -9,6 +9,7 @@
     "client"
   ],
   "scripts": {
+    "install": "yarn install",
     "start": "concurrently \"yarn workspace server start\" \"yarn workspace client dev\"",
     "lint": "concurrently \"yarn workspace server lint\" \"yarn workspace client lint\"",
     "lint:fix": "concurrently \"yarn workspace server lint:fix\" \"yarn workspace client lint:fix\""
