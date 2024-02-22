@@ -1,0 +1,45 @@
+name: Node.js and Next.js CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x] 
+
+    steps:
+    - uses: actions/checkout@v3
+
+    # Setup Node.js environment
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    # Install dependencies for the backend
+    - name: Install backend dependencies
+      working-directory: ./server
+      run: npm ci
+
+    # Run tests for the backend
+    - name: Test backend
+      working-directory: ./server
+      run: npm test
+
+    # Install dependencies for the frontend
+    - name: Install frontend dependencies
+      working-directory: ./client
+      run: npm ci
+
+    # Build the frontend
+    - name: Build frontend
+      working-directory: ./client
+      run: npm run build
