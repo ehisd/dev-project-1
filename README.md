@@ -15,15 +15,10 @@ To get Chattie up and running on your local development machine, follow the step
 
 ### Installation
 
-1. **Clone the Repository**:
+1. **Clone the Repository:**
 
-   Clone Chattie to your local machine using the following command:
+   Begin by cloning Chattie to your local machine using the following command:
 
    ```bash
    git clone https://github.com/Xperienced-Tekie/dev-project-1.git
    cd chattie
-   yarn install
-   yarn start
-   ```
-
-
