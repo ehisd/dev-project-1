@@ -4,10 +4,10 @@ Chattie is a real-time chat application that enables users to communicate with e
 
 ## Features
 
-- **Real-time Messaging**: Instantly send and receive messages.
-- **User Authentication**: Secure user login and registration.
-- **Private and Group Chats**: Create private chats or group conversations.
-- **Responsive UI**: A clean and responsive user interface for an optimal chatting experience across different devices.
+-   **Real-time Messaging**: Instantly send and receive messages.
+-   **User Authentication**: Secure user login and registration.
+-   **Private and Group Chats**: Create private chats or group conversations.
+-   **Responsive UI**: A clean and responsive user interface for an optimal chatting experience across different devices.
 
 ## Getting Started
 
@@ -17,18 +17,23 @@ To get Chattie up and running on your local development machine, follow the step
 
 1. **Clone the Repository:**
 
-   Begin by cloning Chattie to your local machine using the following command:
+    Begin by cloning Chattie to your local machine using the following command:
 
-   ```bash
-   git clone https://github.com/Xperienced-Tekie/dev-project-1.git
-   cd chattie
+    ```bash
+    git clone https://github.com/Xperienced-Tekie/dev-project-1.git
+    cd dev-project-1
 
-2. **Install the Dependency:** 
+    ```
 
-   ```bash
-   yarn install
+2. **Install the Dependency:**
 
-3. **Start server:** 
+    ```bash
+    yarn install
 
-   ```bash
-   yarn start
+    ```
+
+3. **Start server:**
+
+    ```bash
+    yarn start
+    ```
