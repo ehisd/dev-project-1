@@ -1,5 +1,6 @@
 const express = require('express');
 const { registerUser, loginUser, getUser } = require('../controllers/usersController');
+const hashPassword = require('../middlewares/auth');
 
 const app = express();
 
