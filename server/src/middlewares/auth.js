@@ -16,11 +16,10 @@ async function hashPassword(password) {
 async function comparePassword(password, hash) {
     try {
         const hashedPassword = await bcrypt.compare(password, hash)
-        if (hashedPassword) {
-            return true;
-        } else {
+        if (!hashedPassword) {
             return false;
         }
+        return true;
     } catch (error) {
         return('Internal Server Error from comparing passowrd' );
     }
