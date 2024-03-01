@@ -15,16 +15,19 @@ To get Chattie up and running on your local development machine, follow the step
 
 ### Installation
 
-1. **Clone the Repository:**
+1. **Fork the repository**
+    On the repo page locate and click on the fork button to fork the repository. This create a copy of the repository in your repo list on your github account. Go back to your repository and clone the forked copy of the project repository. 
+
+2. **Clone the forked copy Repository:**
 
     Begin by cloning Chattie to your local machine using the following command:
 
     ```bash
-    git clone https://github.com/Xperienced-Tekie/dev-project-1.git
+    git clone https://github.com/your_username/dev-project-1.git
     cd dev-project-1
 
     ```
-2. **Confirm Node and yarn are installed**
+3. **Confirm Node and yarn are installed**
 
 Use the command to check and ensure node and yarn are installed  
     ```bash
@@ -32,14 +35,14 @@ Use the command to check and ensure node and yarn are installed
     yarn -v
     ```
 
-3. **Install the Dependency:**
+4. **Install the Dependency:**
 
     ```bash
     yarn install
 
     ```
 
-4. **Start server:**
+5. **Start server:**
 
     ```bash
     yarn start
