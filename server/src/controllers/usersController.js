@@ -7,7 +7,7 @@ const prisma = new PrismaClient({
 //Register a new user
 async function registerUser(req, res){
   try{
-    const user = await prisma.user.create({
+    const user = await prisma.User.create({
       data: {
         firstname: req.body.firstname,
         lastname: req.body.lastname,
@@ -17,6 +17,7 @@ async function registerUser(req, res){
       },
     });
     res.status(201).json(user);
+    throw new Error("Invalid Data");
   }catch(error){
     console.error('Prisma Error', error);
     res.status(400).json({Error: error.message});
@@ -27,17 +28,29 @@ async function registerUser(req, res){
 async function loginUser(req, res){
   try{
     const user = await prisma.user.findUnique({
-      where : {
+      where: {
         email: req.body.email,
-      },
+        password: req.body.password
+      }
     });
-    if(user.password === req.body.password){
+    if(user){
       res.status(200).json(user);
+    }else{
+      res.status(400).json({Error: "Invalid email or password"});
     }
   }catch(error){
     res.status(400).json({Error: error.message});
   }
 }
 
+//Get all users
+async function getUser(req, res){
+  try{
+    const users = await prisma.user.findMany();
+    res.status(200).json(users);
+  }catch(error){
+    res.status(400).json({Error: error.message});
+  }
+}
 
-
+module.exports = { registerUser, loginUser, getUser };
