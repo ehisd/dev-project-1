@@ -16,8 +16,8 @@ const registerUser = async (req, res) => {
         lastname: req.body.lastname,
         username: req.body.username,
         email: req.body.email,
-        password:  hashedPassword // I used the hashed password
-      },
+        password: hashedPassword
+      }
     });
 
     res.status(201).json(user);
@@ -28,23 +28,23 @@ const registerUser = async (req, res) => {
 };
 
 // Login a user
-const  loginUser = async (req, res) => {
+const loginUser = async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
       where: {
         email: req.body.email
-      },
+      }
     });
-    const result = await comparePassword(req.body.password, user.password)
+    const result = await comparePassword(req.body.password, user.password);
     if (result) {
       res.status(200).json(user);
     } else {
       res.status(400).json({ Error: 'Invalid password' });
     }
   } catch (error) {
-    res.status(400).json({ Error: "Kindly correct your mail"});
+    res.status(400).json({ Error: 'Kindly correct your mail' });
   }
-}
+};
 
 // Get all users
 const getUser = async (req, res) => {
@@ -54,6 +54,6 @@ const getUser = async (req, res) => {
   } catch (error) {
     res.status(400).json({ Error: error.message });
   }
-}
+};
 
 module.exports = { registerUser, loginUser, getUser };
