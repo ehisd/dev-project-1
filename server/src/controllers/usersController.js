@@ -16,8 +16,8 @@ const registerUser = async (req, res) => {
         lastname: req.body.lastname,
         username: req.body.username,
         email: req.body.email,
-        password: hashedPassword
-      }
+        password: hashedPassword,
+      },
     });
 
     res.status(201).json(user);
@@ -32,8 +32,8 @@ const loginUser = async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
       where: {
-        email: req.body.email
-      }
+        email: req.body.email,
+      },
     });
     const result = await comparePassword(req.body.password, user.password);
     if (result) {
