@@ -1,5 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
-const { hashPassword, comparePassword } = require('../middlewares/auth.');
+const { hashPassword, comparePassword } = require('../middlewares/auth');
 
 const prisma = new PrismaClient({
   log: ['error'],
