@@ -6,7 +6,7 @@ const prisma = new PrismaClient({
 });
 
 const registerUser = async (req, res) => {
-  // Hash the password
+  // Hashing the password
   const hashedPassword = await hashPassword(req.body.password);
 
   try {
@@ -16,7 +16,7 @@ const registerUser = async (req, res) => {
         lastname: req.body.lastname,
         username: req.body.username,
         email: req.body.email,
-        password:  hashedPassword // Use the hashed password
+        password:  hashedPassword // I used the hashed password
       },
     });
 
@@ -24,12 +24,11 @@ const registerUser = async (req, res) => {
   } catch (error) {
     console.error('Prisma Error', error);
     res.status(400).json({ Error: error.message });
-    // Move the throw new Error('Invalid Data') here if needed
   }
 };
 
 // Login a user
-async function loginUser(req, res) {
+const  loginUser = async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
       where: {
@@ -48,7 +47,7 @@ async function loginUser(req, res) {
 }
 
 // Get all users
-async function getUser(req, res) {
+const getUser = async (req, res) => {
   try {
     const users = await prisma.user.findMany();
     res.status(200).json(users);
