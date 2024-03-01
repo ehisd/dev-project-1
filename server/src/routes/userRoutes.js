@@ -1,5 +1,5 @@
-const express = require("express");
-const { registerUser, loginUser, getUser } = require("../controllers/usersController");
+const express = require('express');
+const { registerUser, loginUser, getUser } = require('../controllers/usersController');
 
 const app = express();
 
@@ -35,7 +35,7 @@ app.use(express.json());
  *       400:
  *         description: Error creating user
  */
-app.post("/register", registerUser);
+app.post('/register', registerUser);
 
 // Annotate getting the list of users
 /**
@@ -61,7 +61,7 @@ app.post("/register", registerUser);
  *       400:
  *         description: Error logging in user
  */
-app.post("/login", loginUser);
+app.post('/login', loginUser);
 
 // Annotate getting the list of users
 /**
@@ -75,7 +75,7 @@ app.post("/login", loginUser);
  *         description: List of users
  *       400:
  *         description: Error getting users
- */ 
-app.get("/users", getUser);
+ */
+app.get('/users', getUser);
 
 module.exports = app;
