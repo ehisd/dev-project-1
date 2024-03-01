@@ -2,7 +2,7 @@ const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerDefinition = require('./swaggerDefinition');
 
 const options = {
-  swaggerDefinition: swaggerDefinition,
+  swaggerDefinition,
   apis: ['./src/routes/*.js'],
 };
 
