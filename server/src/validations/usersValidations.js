@@ -10,11 +10,12 @@ const validateUser = Joi.object({
     .min(8)
     .max(40)
     .pattern(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&*\()_+{}|:"<>?~`\-=[\]\\;',./]).{8,40}$/
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+{}|:"<>?~`\-=[\]\\;',./]).{8,40}$/
     )
     .message(
       '"{#label}" must contain at least 1 lowercase letter, 1 uppercase letter, 1 number, 1 symbol, and be 8-40 characters.'
-    ),
+    )
+    .required(),
 });
 
 // validate schema for user login
@@ -24,11 +25,12 @@ const validateLogin = Joi.object({
     .min(8)
     .max(40)
     .pattern(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&*\()_+{}|:"<>?~`\-=[\]\\;',./]).{8,40}$/
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+{}|:"<>?~`\-=[\]\\;',./]).{8,40}$/
     )
     .message(
       '"{#label}" must contain at least 1 lowercase letter, 1 uppercase letter, 1 number, 1 symbol, and be 8-40 characters.'
-    ),
+    )
+    .required(),
 });
 
 module.exports = {
