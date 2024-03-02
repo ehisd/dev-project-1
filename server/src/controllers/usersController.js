@@ -53,9 +53,8 @@ const loginUser = async (req, res) => {
     const result = await comparePassword(req.body.password, user.password);
     if (result) {
       return res.status(200).json(user);
-    } else {
-      return res.status(400).json({ Error: 'Invalid password' });
     }
+    return res.status(400).json({ Error: 'Invalid password' });
   } catch (error) {
     return res.status(400).json({ Error: 'Kindly correct your mail' });
   }
