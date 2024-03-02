@@ -1,11 +1,20 @@
 const { PrismaClient } = require('@prisma/client');
 const { hashPassword, comparePassword } = require('../middlewares/auth');
+const {
+  validateUser,
+  validateLogin,
+} = require('../validations/usersValidations');
 
 const prisma = new PrismaClient({
   log: ['error'],
 });
 
 const registerUser = async (req, res) => {
+  // Validate request body against schema
+  const { error } = validateUser.validate(req.body);
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
   // Hashing the password
   const hashedPassword = await hashPassword(req.body.password);
 
@@ -29,6 +38,11 @@ const registerUser = async (req, res) => {
 
 // Login a user
 const loginUser = async (req, res) => {
+  // validate request body against schema
+  const { error } = validateLogin.validateRequest(req.body);
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
   try {
     const user = await prisma.user.findUnique({
       where: {
