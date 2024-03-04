@@ -77,25 +77,25 @@ const loginUser = async (req, res) => {
 };
 
 // Update user details for the settings page
-// const updateSettings = (req, res) => {
-//   try {
-//     const updatedUser = prisma.User.update({
-//       where: {
-//         id: parseInt(req.user.id),
-//       },
-//       data: {
-//         username: req.body.username,
-//         email: req.body.email,
-//         password: req.body.password,
-//         bio: req.body.bio,
-//         profilePicUrl: req.body.profilePicUrl,
-//       },
-//     });
-//     return res.status(200).json(updatedUser);
-//   } catch (error) {
-//     return res.status(400).json({ Error: error.message });
-//   }
-// }
+const updateSettings = (req, res) => {
+  try {
+    const updatedUser = prisma.User.update({
+      where: {
+        id: parseInt(req.user.id),
+      },
+      data: {
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.password,
+        bio: req.body.bio,
+        profilePicUrl: req.body.profilePicUrl,
+      },
+    });
+    return res.status(200).json(updatedUser);
+  } catch (error) {
+    return res.status(400).json({ Error: error.message });
+  }
+}
 
 // Get all users based on the username
 const getUsers = async (req, res) => {
