@@ -34,23 +34,23 @@ const registerUser = async (req, res) => {
 };
 
 // Update user profile for the onboarding
-// const onBoarding = async (req, res) => {
-//   try {
-//     const updatedUser = await prisma.User.update({
-//       where: {
-//         id: parseInt(req.user.id),
-//       },
-//       data: {
-//         username: req.body.email,
-//         bio: req.body.bio,
-//         profilePicUrl: req.body.profilePicUrl,
-//       },
-//     });
-//     return res.status(200).json(updatedUser);
-//   } catch (error) {
-//     return res.status(400).json({ Error: error.message });
-//   }
-// };
+const onBoarding = async (req, res) => {
+  try {
+    const updatedUser = await prisma.User.update({
+      where: {
+        id: parseInt(req.user.id),
+      },
+      data: {
+        username: req.body.email,
+        bio: req.body.bio,
+        profilePicUrl: req.body.profilePicUrl,
+      },
+    });
+    return res.status(200).json(updatedUser);
+  } catch (error) {
+    return res.status(400).json({ Error: error.message });
+  }
+};
 
 // Login a user
 const loginUser = async (req, res) => {
