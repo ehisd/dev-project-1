@@ -38,7 +38,7 @@ const registerUser = async (req, res) => {
 // Update user profile for the onboarding
 const onBoarding = async (req, res) => {
   // Handle profile picture upload using Multer
-  uploadProfilePic(req, res, async function (err) {
+  uploadProfilePic(req, res, async (err) => {
     try {
       if (err instanceof multer.MulterError) {
         return res.status(500).json({ error: 'File upload error' });
