@@ -21,9 +21,6 @@ const registerUser = async (req, res) => {
 
     const user = await prisma.user.create({
       data: {
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        username: req.body.username,
         email: req.body.email,
         password: hashedPassword,
       },
@@ -36,6 +33,25 @@ const registerUser = async (req, res) => {
   }
 };
 
+// Update user profile for the onboarding
+// const onBoarding = async (req, res) => {
+//   try {
+//     const updatedUser = await prisma.User.update({
+//       where: {
+//         id: parseInt(req.user.id),
+//       },
+//       data: {
+//         username: req.body.email,
+//         bio: req.body.bio,
+//         profilePicUrl: req.body.profilePicUrl,
+//       },
+//     });
+//     return res.status(200).json(updatedUser);
+//   } catch (error) {
+//     return res.status(400).json({ Error: error.message });
+//   }
+// };
+
 // Login a user
 const loginUser = async (req, res) => {
   try {
@@ -45,7 +61,7 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    const user = await prisma.user.findUnique({
+    const user = await prisma.User.findUnique({
       where: {
         email: req.body.email,
       },
@@ -60,14 +76,41 @@ const loginUser = async (req, res) => {
   }
 };
 
-// Get all users
-const getUser = async (req, res) => {
+// Update user details for the settings page
+// const updateSettings = (req, res) => {
+//   try {
+//     const updatedUser = prisma.User.update({
+//       where: {
+//         id: parseInt(req.user.id),
+//       },
+//       data: {
+//         username: req.body.username,
+//         email: req.body.email,
+//         password: req.body.password,
+//         bio: req.body.bio,
+//         profilePicUrl: req.body.profilePicUrl,
+//       },
+//     });
+//     return res.status(200).json(updatedUser);
+//   } catch (error) {
+//     return res.status(400).json({ Error: error.message });
+//   }
+// }
+
+// Get all users based on the username
+const getUsers = async (req, res) => {
   try {
-    const users = await prisma.user.findMany();
+    const users = await prisma.User.findMany({
+      where: {
+        username: {
+          contains: req.query.username,
+        },
+      },
+    });
     return res.status(200).json(users);
   } catch (error) {
     return res.status(400).json({ Error: error.message });
   }
 };
 
-module.exports = { registerUser, loginUser, getUser };
+module.exports = { registerUser, loginUser, getUsers };
