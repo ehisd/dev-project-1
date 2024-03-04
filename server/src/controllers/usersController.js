@@ -42,14 +42,13 @@ const onBoarding = async (req, res) => {
     try {
       if (err instanceof multer.MulterError) {
         return res.status(500).json({ error: 'File upload error' });
-      } else if (err) {
-        return res.status(500).json({ error: 'Internal server error' });
       }
+      return res.status(500).json({ error: 'Internal server error' });
 
       // Update user profile with uploaded profile picture URL
       const updatedUser = await prisma.User.update({
         where: {
-          id: parseInt(req.user.id),
+          id: req.user.id,
         },
         data: {
           username: req.body.email,
@@ -63,7 +62,6 @@ const onBoarding = async (req, res) => {
     }
   });
 };
-
 
 // Login a user
 const loginUser = async (req, res) => {
