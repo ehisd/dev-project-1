@@ -1,5 +1,11 @@
 const express = require('express');
-const { registerUser, loginUser, getUsers, onBoarding, updateSettings } = require('../controllers/usersController');
+const {
+  registerUser,
+  loginUser,
+  getUsers,
+  onBoarding,
+  updateSettings,
+} = require('../controllers/usersController');
 const { uploadProfilePic } = require('../middlewares/fileUpload');
 
 const app = express();
@@ -143,7 +149,5 @@ app.put('/settings', updateSettings);
  *         description: Error onboarding user
  */
 app.post('/onboarding', uploadProfilePic, onBoarding);
-
-
 
 module.exports = app;
