@@ -5,6 +5,7 @@ const {
   validateLogin,
 } = require('../validations/usersValidations');
 const { uploadProfilePic } = require('../middlewares/fileUpload');
+const multer = require('multer');
 
 const prisma = new PrismaClient({
   log: ['error'],
@@ -17,10 +18,10 @@ const registerUser = async (req, res) => {
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }
-    // Hashing the password
+    // Hash the password
     const hashedPassword = await hashPassword(req.body.password);
 
-    const user = await prisma.user.create({
+    const user = await prisma.User.create({
       data: {
         email: req.body.email,
         password: hashedPassword,
@@ -67,11 +68,10 @@ const onBoarding = async (req, res) => {
   }
 };
 
-
 // Login a user
 const loginUser = async (req, res) => {
   try {
-    // validate request body against schema
+    // Validate request body against schema
     const { error } = validateLogin.validateRequest(req.body);
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
@@ -88,17 +88,17 @@ const loginUser = async (req, res) => {
     }
     return res.status(400).json({ Error: 'Invalid password' });
   } catch (error) {
-    return res.status(400).json({ Error: 'Kindly correct your mail' });
+    return res.status(400).json({ Error: 'Kindly correct your email' });
   }
 };
 
 // Update user details for the settings page
 const updateSettings = async (req, res) => {
   try {
-    // Hashing the password
+    // Hash the password
     const hashedPassword = await hashPassword(req.body.password);
 
-    const updateUser = prisma.User.update({
+    const updateUser = await prisma.User.update({
       where: {
         id: req.user.id,
       },
@@ -114,7 +114,7 @@ const updateSettings = async (req, res) => {
   } catch (error) {
     return res.status(400).json({ Error: error.message });
   }
-}
+};
 
 // Get all users based on the username
 const getUsers = async (req, res) => {
@@ -132,5 +132,10 @@ const getUsers = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, getUsers, onBoarding, updateSettings };
-
+module.exports = {
+  registerUser,
+  loginUser,
+  getUsers,
+  onBoarding,
+  updateSettings,
+};
