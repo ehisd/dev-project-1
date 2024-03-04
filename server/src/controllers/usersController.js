@@ -1,11 +1,11 @@
 const { PrismaClient } = require('@prisma/client');
+const multer = require('multer');
 const { hashPassword, comparePassword } = require('../middlewares/auth');
 const {
   validateUser,
   validateLogin,
 } = require('../validations/usersValidations');
 const { uploadProfilePic } = require('../middlewares/fileUpload');
-const multer = require('multer');
 
 const prisma = new PrismaClient({
   log: ['error'],
@@ -37,9 +37,9 @@ const registerUser = async (req, res) => {
 
 // Update user profile for the onboarding
 const onBoarding = async (req, res) => {
-  try {
-    // Handle profile picture upload using Multer
-    uploadProfilePic(req, res, async function (err) {
+  // Handle profile picture upload using Multer
+  uploadProfilePic(req, res, async function (err) {
+    try {
       if (err instanceof multer.MulterError) {
         return res.status(500).json({ error: 'File upload error' });
       } else if (err) {
@@ -47,26 +47,23 @@ const onBoarding = async (req, res) => {
       }
 
       // Update user profile with uploaded profile picture URL
-      try {
-        const updatedUser = await prisma.User.update({
-          where: {
-            id: parseInt(req.user.id),
-          },
-          data: {
-            username: req.body.email,
-            bio: req.body.bio,
-            profilePicUrl: req.file ? req.file.path : null,
-          },
-        });
-        return res.status(200).json(updatedUser);
-      } catch (error) {
-        return res.status(400).json({ Error: error.message });
-      }
-    });
-  } catch (error) {
-    return res.status(400).json({ Error: error.message });
-  }
+      const updatedUser = await prisma.User.update({
+        where: {
+          id: parseInt(req.user.id),
+        },
+        data: {
+          username: req.body.email,
+          bio: req.body.bio,
+          profilePicUrl: req.file ? req.file.path : null,
+        },
+      });
+      return res.status(200).json(updatedUser);
+    } catch (error) {
+      return res.status(400).json({ Error: error.message });
+    }
+  });
 };
+
 
 // Login a user
 const loginUser = async (req, res) => {
