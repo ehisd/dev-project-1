@@ -6,9 +6,9 @@ const saltRounds = 10;
 async function hashPassword(password) {
   try {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-    return (hashedPassword);
+    return hashedPassword;
   } catch (error) {
-    return (`Internal server error from hashing password: ${error}`);
+    return `Internal server error from hashing password: ${error}`;
   }
 }
 
@@ -22,6 +22,5 @@ async function comparePassword(password, hash) {
     throw new Error(`Internal server error from comparing passwords: ${error}`);
   }
 }
-
 
 module.exports = { hashPassword, comparePassword };

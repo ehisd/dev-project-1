@@ -79,7 +79,7 @@ const loginUser = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ Error: 'User not found' })
+      return res.status(404).json({ Error: 'User not found' });
     }
 
     const result = await comparePassword(req.body.password, user.password);
