@@ -16,13 +16,12 @@ async function hashPassword(password) {
 async function comparePassword(password, hash) {
   try {
     const hashedPassword = await bcrypt.compare(password, hash);
-    if (!hashedPassword) {
-      return false;
-    }
-    return true;
+    return hashedPassword;
   } catch (error) {
-    return (`Internal server error from comparing password: ${error}`);
+    console.error('Error comparing passwords:', error);
+    throw new Error(`Internal server error from comparing passwords: ${error}`);
   }
 }
+
 
 module.exports = { hashPassword, comparePassword };

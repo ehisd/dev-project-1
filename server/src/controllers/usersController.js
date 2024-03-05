@@ -67,7 +67,7 @@ const onBoarding = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     // Validate request body against schema
-    const { error } = validateLogin.validateRequest(req.body);
+    const { error } = validateLogin.validate(req.body);
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }
@@ -77,13 +77,18 @@ const loginUser = async (req, res) => {
         email: req.body.email,
       },
     });
+
+    if (!user) {
+      return res.status(404).json({ Error: 'User not found' })
+    }
+
     const result = await comparePassword(req.body.password, user.password);
     if (result) {
       return res.status(200).json(user);
     }
     return res.status(400).json({ Error: 'Invalid password' });
   } catch (error) {
-    return res.status(400).json({ Error: 'Kindly correct your email' });
+    return res.status(500).json({ Error: 'Internal Server Error' });
   }
 };
 
