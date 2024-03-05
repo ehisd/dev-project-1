@@ -26,12 +26,6 @@ app.use(express.json());
  *           schema:
  *             type: object
  *             properties:
- *               firstname:
- *                 type: string
- *               lastname:
- *                 type: string
- *               username:
- *                 type: string
  *               email:
  *                 type: string
  *               password:
@@ -44,7 +38,7 @@ app.use(express.json());
  */
 app.post('/register', registerUser);
 
-// Annotate getting the list of users
+// Annotate logging in a user
 /**
  * @swagger
  * /login:
