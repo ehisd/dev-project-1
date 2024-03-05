@@ -1,9 +1,11 @@
 const { PrismaClient } = require('@prisma/client');
+const multer = require('multer');
 const { hashPassword, comparePassword } = require('../middlewares/auth');
 const {
   validateUser,
   validateLogin,
 } = require('../validations/usersValidations');
+const { uploadProfilePic } = require('../middlewares/fileUpload');
 
 const prisma = new PrismaClient({
   log: ['error'],
@@ -16,14 +18,11 @@ const registerUser = async (req, res) => {
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }
-    // Hashing the password
+    // Hash the password
     const hashedPassword = await hashPassword(req.body.password);
 
-    const user = await prisma.user.create({
+    const user = await prisma.User.create({
       data: {
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        username: req.body.username,
         email: req.body.email,
         password: hashedPassword,
       },
@@ -36,16 +35,44 @@ const registerUser = async (req, res) => {
   }
 };
 
+// Update user profile for the onboarding
+const onBoarding = async (req, res) => {
+  // Handle profile picture upload using Multer
+  uploadProfilePic(req, res, async (err) => {
+    try {
+      if (err instanceof multer.MulterError) {
+        return res.status(500).json({ error: 'File upload error' });
+      }
+      // return res.status(500).json({ error: 'Internal server error' });
+
+      // Update user profile with uploaded profile picture URL
+      const updatedUser = await prisma.User.update({
+        where: {
+          id: req.user.id,
+        },
+        data: {
+          username: req.body.email,
+          bio: req.body.bio,
+          profilePicUrl: req.file ? req.file.path : null,
+        },
+      });
+      return res.status(200).json(updatedUser);
+    } catch (error) {
+      return res.status(400).json({ Error: error.message });
+    }
+  });
+};
+
 // Login a user
 const loginUser = async (req, res) => {
   try {
-    // validate request body against schema
+    // Validate request body against schema
     const { error } = validateLogin.validateRequest(req.body);
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    const user = await prisma.user.findUnique({
+    const user = await prisma.User.findUnique({
       where: {
         email: req.body.email,
       },
@@ -56,18 +83,54 @@ const loginUser = async (req, res) => {
     }
     return res.status(400).json({ Error: 'Invalid password' });
   } catch (error) {
-    return res.status(400).json({ Error: 'Kindly correct your mail' });
+    return res.status(400).json({ Error: 'Kindly correct your email' });
   }
 };
 
-// Get all users
-const getUser = async (req, res) => {
+// Update user details for the settings page
+const updateSettings = async (req, res) => {
   try {
-    const users = await prisma.user.findMany();
+    // Hash the password
+    const hashedPassword = await hashPassword(req.body.password);
+
+    const updateUser = await prisma.User.update({
+      where: {
+        id: req.user.id,
+      },
+      data: {
+        username: req.body.username,
+        email: req.body.email,
+        password: hashedPassword,
+        bio: req.body.bio,
+        profilePicUrl: req.body.profilePicUrl,
+      },
+    });
+    return res.status(200).json(updateUser);
+  } catch (error) {
+    return res.status(400).json({ Error: error.message });
+  }
+};
+
+// Get all users based on the username
+const getUsers = async (req, res) => {
+  try {
+    const users = await prisma.User.findMany({
+      where: {
+        username: {
+          contains: req.query.username,
+        },
+      },
+    });
     return res.status(200).json(users);
   } catch (error) {
     return res.status(400).json({ Error: error.message });
   }
 };
 
-module.exports = { registerUser, loginUser, getUser };
+module.exports = {
+  registerUser,
+  loginUser,
+  getUsers,
+  onBoarding,
+  updateSettings,
+};

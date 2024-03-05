@@ -1,5 +1,12 @@
 const express = require('express');
-const { registerUser, loginUser, getUser } = require('../controllers/usersController');
+const {
+  registerUser,
+  loginUser,
+  getUsers,
+  onBoarding,
+  updateSettings,
+} = require('../controllers/usersController');
+const { uploadProfilePic } = require('../middlewares/fileUpload');
 
 const app = express();
 
@@ -63,7 +70,7 @@ app.post('/register', registerUser);
  */
 app.post('/login', loginUser);
 
-// Annotate getting the list of users
+// Annotate getting the list of users based on the username
 /**
  * @swagger
  * /users:
@@ -72,10 +79,75 @@ app.post('/login', loginUser);
  *     description: Get all users
  *     responses:
  *       200:
- *         description: List of users
+ *         description: Users retrieved successfully
  *       400:
- *         description: Error getting users
+ *         description: Error retrieving users
  */
-app.get('/users', getUser);
+app.get('/users', getUsers);
+
+// Annotate updating user details for the settings page
+/**
+ * @swagger
+ * /settings:
+ *   put:
+ *     summary: Update user details
+ *     description: Update user details
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               bio:
+ *                 type: string
+ *               profilePicUrl:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User details updated successfully
+ *       400:
+ *         description: Error updating user details
+ */
+app.put('/settings', updateSettings);
+
+// Annotate Onboarding route with profile picture upload
+/**
+ * @swagger
+ * /onboarding:
+ *   post:
+ *     summary: Onboarding
+ *     description: Onboarding
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               profilePic:
+ *                 type: string
+ *                 format: binary
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               bio:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: User onboarding successful
+ *       400:
+ *         description: Error onboarding user
+ */
+app.post('/onboarding', uploadProfilePic, onBoarding);
 
 module.exports = app;
