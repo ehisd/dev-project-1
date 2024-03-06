@@ -16,21 +16,32 @@ datasource db {
 // prisma/schema.prisma
 
 model User {
-  id         Int       @id @default(autoincrement())
+  id         String       @id @default(uuid())
   username   String?   @unique
   email      String    @unique
   password   String
   bio        String?
   profilePicUrl String?
+  refreshTokens RefreshToken[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime?       @updatedAt 
   sentMessages Message[] @relation("Sender")
   receivedMessages Message[] @relation("Recipient")
 }
 model Message {
   id              Int      @id @default(autoincrement())
   sender          User     @relation("Sender", fields: [senderId], references: [id])
-  senderId        Int
+  senderId        String
   recipient       User     @relation("Recipient", fields: [recipientId], references: [id])
-  recipientId     Int
+  recipientId     String
   content         String
 }
-
+model RefreshToken {
+  id          String   @id @unique @default(uuid())
+  hashedToken String
+  userId      String
+  User        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  revoked     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const { db } = require('../utils/db');
 
 const saltRounds = 10;
 
@@ -25,4 +26,25 @@ async function comparePassword(password, hash) {
   }
 }
 
-module.exports = { hashPassword, comparePassword };
+function findUserByEmail(email) {
+  return db.User.findUnique({
+    where: {
+      email,
+    },
+  });
+}
+
+function createUserByEmailAndPassword(user) {
+  user.password = bcrypt.hashSync(user.password, 12);
+  return db.user.create({
+    data: user,
+  });
+}
+function findUserById(id) {
+  return db.user.findUnique({
+    where: {
+      id,
+    },
+  });
+}
+module.exports = { hashPassword, comparePassword, findUserByEmail, findUserById, createUserByEmailAndPassword };
