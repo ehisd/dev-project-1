@@ -26,6 +26,7 @@ async function comparePassword(password, hash) {
   }
 }
 
+// Find user by email
 function findUserByEmail(email) {
   return db.User.findUnique({
     where: {
@@ -34,12 +35,15 @@ function findUserByEmail(email) {
   });
 }
 
+// Create user by email and password
 function createUserByEmailAndPassword(user) {
   user.password = bcrypt.hashSync(user.password, 12);
   return db.user.create({
     data: user,
   });
 }
+
+// find user by ID
 function findUserById(id) {
   return db.user.findUnique({
     where: {

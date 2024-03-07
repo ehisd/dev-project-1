@@ -49,6 +49,7 @@ const registerUser = async (req, res) => {
       //     password: hashedPassword,
       //   },
       // });
+
       const user = await createUserByEmailAndPassword({ email, password });
       // add access token and refresh token to user
       const jti = uuidv4();
@@ -68,6 +69,7 @@ const registerUser = async (req, res) => {
     return res.status(400).json({ Error: error.message });
   }
 }
+
 // Update user profile for the onboarding
 const onBoarding = async (req, res) => {
   // Handle profile picture upload using Multer
@@ -99,13 +101,13 @@ const onBoarding = async (req, res) => {
 // Login a user
 const loginUser = async (req, res) => {
   try {
-    console.log('entry');
+    // console.log('entry');
     // Validate request body against schema
-    // const { error } = validateLogin.validateRequest(req.body);
-    // if (error) {
-    //   console.log('begins here');
-    //   return res.status(400).json({ error: error.details[0].message });
-    // };
+    const { error } = validateLogin.validateRequest(req.body);
+    if (error) {
+      console.log('begins here');
+      return res.status(400).json({ error: error.details[0].message });
+    };
     
     const { email, password } = req.body;
     console.log(req.body);
