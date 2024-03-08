@@ -1,4 +1,4 @@
-const { db } = require('../utils/db.js');
+const { db } = require('../utils/db');
 const multer = require('multer');
 const { hashPassword, comparePassword, findUserByEmail, findUserById, createUserByEmailAndPassword } = require('../middlewares/auth');
 const {
