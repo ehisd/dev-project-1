@@ -84,7 +84,7 @@ const loginUser = async (req, res) => {
 
     const result = await comparePassword(req.body.password, user.password);
     if (result) {
-      return res.status(200).json(user);
+      return res.status(200).json({ message: 'Login Successful' });
     }
     return res.status(400).json({ Error: 'Invalid password' });
   } catch (error) {
@@ -110,7 +110,9 @@ const updateSettings = async (req, res) => {
         profilePicUrl: req.body.profilePicUrl,
       },
     });
-    return res.status(200).json(updateUser);
+    return res
+      .status(200)
+      .json({ message: 'User details updated successfully', updateUser });
   } catch (error) {
     return res.status(400).json({ Error: error.message });
   }

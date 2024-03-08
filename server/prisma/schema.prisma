@@ -14,7 +14,7 @@ datasource db {
 }
 
 model User {
-  id         Int       @id @default(autoincrement())
+  id         String       @id @default(uuid())
   username   String?   @unique
   email      String    @unique
   password   String
@@ -24,11 +24,11 @@ model User {
   receivedMessages Message[] @relation("Recipient")
 }
 model Message {
-  id              Int      @id @default(autoincrement())
+  id              String      @id @default(uuid())
   sender          User     @relation("Sender", fields: [senderId], references: [id])
-  senderId        Int
+  senderId        String
   recipient       User     @relation("Recipient", fields: [recipientId], references: [id])
-  recipientId     Int
+  recipientId     String
   content         String
 }
 
