@@ -7,9 +7,9 @@ const saltRounds = 10;
 async function hashPassword(password) {
   try {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-    return (hashedPassword);
+    return hashedPassword;
   } catch (error) {
-    return (`Internal server error from hashing password: ${error}`);
+    return `Internal server error from hashing password: ${error}`;
   }
 }
 
@@ -17,12 +17,10 @@ async function hashPassword(password) {
 async function comparePassword(password, hash) {
   try {
     const hashedPassword = await bcrypt.compare(password, hash);
-    if (!hashedPassword) {
-      return false;
-    }
-    return true;
+    return hashedPassword;
   } catch (error) {
-    return (`Internal server error from comparing password: ${error}`);
+    console.error('Error comparing passwords:', error);
+    throw new Error(`Internal server error from comparing passwords: ${error}`);
   }
 }
 

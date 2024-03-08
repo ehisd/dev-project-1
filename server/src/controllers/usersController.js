@@ -1,4 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
+const { db } = require('../utils/db.js');
 const multer = require('multer');
 const { hashPassword, comparePassword, findUserByEmail, findUserById, createUserByEmailAndPassword } = require('../middlewares/auth');
 const {
@@ -14,85 +14,82 @@ const {
   addRefreshTokenToWhitelist,
 } = require('../services/tokenServices');
 
-
-const prisma = new PrismaClient({
-  log: ['error'],
-});
-
+// Register User
 const registerUser = async (req, res) => {
   try {
+    // Get user input
+    const { email, password } = req.body;
     // Validate request body against schema
-    const { error } = validateUser.validate(req.body);
+    const { error } = validateUser.validate({ email, password });
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }
+
     // Hash the password
-    const hashedPassword = await hashPassword(req.body.password);
+    const hashedPassword = await hashPassword(password);
 
-    //not checking if the email is already used
-    try {
-      const { email, password } = req.body;
-      if (!email || !password) {
-        res.status(400);
-        throw new Error('You must provide the required details.');
-      }
-      const existingUser = await findUserByEmail(email);
-      if (existingUser) {
-        console.log(existingUser);
-        res.status(400);
-        throw new Error('Email already in use');
-      }
+    // Check if the email is already in use
+    const existingUser = await findUserByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({ error: 'Email already in use' });
+    }
 
-      // const user = await prisma.User.create({
-      //   data: {
-      //     email: req.body.email,
-      //     password: hashedPassword,
-      //   },
-      // });
+    // Create user
+    const user = await createUserByEmailAndPassword({
+      email,
+      password: hashedPassword
+    });
 
-      const user = await createUserByEmailAndPassword({ email, password });
-      // add access token and refresh token to user
-      const jti = uuidv4();
-      const { accessToken, refreshToken } = generateTokens(user, jti);
-      await addRefreshTokenToWhitelist({ jti, refreshToken, userId: user.id });
-      return res.status(201).json({
-        accessToken,
-        refreshToken,
-        user,
-      });
-  } catch (err) {
-    console.log(err);
-  }
-    // return res.status(201).json(user);
+    // Generate tokens
+    const jti = uuidv4();
+    const { accessToken, refreshToken } = generateTokens(user, jti);
+    await addRefreshTokenToWhitelist({ jti, refreshToken, userId: user.id });
+
+    // Return response
+    return res.status(201).json({
+      accessToken,
+      refreshToken,
+      user
+    });
   } catch (error) {
-    console.error('Prisma Error', error);
-    return res.status(400).json({ Error: error.message });
+    console.error('Error in registerUser:', error);
+    return res.status(400).json({ error: error.message });
   }
-}
+};
 
 // Update user profile for the onboarding
+// Function to handle user profile update during onboarding process
 const onBoarding = async (req, res) => {
-  // Handle profile picture upload using Multer
+  // Destructure request object for clarity
+  const { body, file, user } = req;
+
+  // Handle profile picture upload using Multer middleware
   uploadProfilePic(req, res, async (err) => {
     try {
+      // Check for Multer errors
       if (err instanceof multer.MulterError) {
+        // Return error response for file upload error
         return res.status(500).json({ error: 'File upload error' });
       }
-      // return res.status(500).json({ error: 'Internal server error' });
 
-      // Update user profile with uploaded profile picture URL
-      const updatedUser = await prisma.User.update({
+      // Update user profile in the database
+      const updatedUser = await db.User.update({
+        // Specify user ID for updating the correct user
         where: {
-          id: req.user.id,
+          id: user.id,
         },
+        // Data to update in the user profile
         data: {
-          username: req.body.email,
-          bio: req.body.bio,
-          profilePicUrl: req.file ? req.file.path : null,
+          username: body.username, // Update username
+          bio: body.bio, // Update bio
+          profilePicUrl: file ? file.path : null, // Update profile picture URL if file is uploaded
         },
       });
+
+      // Return success response with updated user details
       return res.status(200).json(updatedUser);
     } catch (error) {
+      // Return error response if an error occurs during the update process
       return res.status(400).json({ Error: error.message });
     }
   });
@@ -101,86 +98,98 @@ const onBoarding = async (req, res) => {
 // Login a user
 const loginUser = async (req, res) => {
   try {
-    // console.log('entry');
-    // Validate request body against schema
-    const { error } = validateLogin.validateRequest(req.body);
-    if (error) {
-      console.log('begins here');
-      return res.status(400).json({ error: error.details[0].message });
-    };
-    
+    // Extract email and password from request body
     const { email, password } = req.body;
-    console.log(req.body);
-    if (!email || !password) {
-      res.status(400);
-      throw new Error('You must provide an email and a password.');
+
+    // Validate user input
+    const { error } = validateLogin.validate({ email, password });
+    if (error) {
+      // Return validation error response
+      return res.status(400).json({ error: error.details[0].message });
     }
 
-    // const user = await prisma.User.findUnique({
-    //   where: {
-    //     email: req.body.email,
-    //   },
-    // });
-
+    // Find user by email
     const existingUser = await findUserByEmail(email);
     if (!existingUser) {
-      res.status(403);
-      throw new Error('Invalid login credentials.');
+      // Return authentication failure response if user not found
+      return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
-    const result = await comparePassword(req.body.password, existingUser.password);
-    if (!result) {
-      res.status(403);
-      throw new Error('Invalid login credentials.');
+    // Compare password hash
+    const passwordMatch = await comparePassword(password, existingUser.password);
+    if (!passwordMatch) {
+      // Return authentication failure response if password does not match
+      return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
+    // Generate tokens
     const jti = uuidv4();
     const { accessToken, refreshToken } = generateTokens(existingUser, jti);
-    console.log("access token "+ accessToken, "refresh token " + refreshToken);
+
+    // Add refresh token to whitelist
     await addRefreshTokenToWhitelist({ jti, refreshToken, userId: existingUser.id });
-    // console.log("access token " + accessToken, "refresh token " + refreshToken, "user "+ user);
 
-    res.status(200).json({
-      accessToken,
-      refreshToken,
-      user
-    });
-
-    return res.status(400).json({ Error: 'Invalid password' });
+    // Return success response with tokens
+    return res.status(200).json({ accessToken, refreshToken });
   } catch (error) {
-    console.log("always here");
-    return res.status(400).json({ Error: 'Kindly correct your email' });
+    // Handle unexpected errors
+    console.error('Error in loginUser:', error);
+    return res.status(500).json({ error: 'Internal server error.' });
   }
 };
+
 
 // Update user details for the settings page
 const updateSettings = async (req, res) => {
   try {
-    // Hash the password
-    const hashedPassword = await hashPassword(req.body.password);
+    // Destructure request body for clarity
+    const { username, email, password, bio } = req.body;
 
-    const updateUser = await prisma.User.update({
+    // Hash the password if provided
+    const hashedPassword = password ? await hashPassword(password) : undefined;
+
+    // Update user details in the database
+    const updateUser = await db.User.update({
       where: {
         id: req.user.id,
       },
       data: {
-        username: req.body.username,
-        email: req.body.email,
+        username,
+        email,
         password: hashedPassword,
-        bio: req.body.bio,
-        profilePicUrl: req.body.profilePicUrl,
+        bio,
       },
     });
-    return res.status(200).json(updateUser);
+
+    // Handle profile picture upload using Multer
+    uploadProfilePic(req, res, async (err) => {
+      if (err instanceof multer.MulterError) {
+        return res.status(500).json({ error: 'File upload error' });
+      }
+      if (err) {
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+
+      // Update profilePicUrl if a file was uploaded
+      if (req.file) {
+        updateUser.profilePicUrl = req.file.path;
+        await updateUser.save();
+      }
+
+      // Return updated user details
+      return res.status(200).json(updateUser);
+    });
   } catch (error) {
+    // Handle errors
     return res.status(400).json({ Error: error.message });
   }
 };
 
+
 // Get all users based on the username
 const getUsers = async (req, res) => {
   try {
-    const users = await prisma.User.findMany({
+    const users = await db.User.findMany({
       where: {
         username: {
           contains: req.query.username,

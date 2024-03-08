@@ -2,10 +2,7 @@ const Joi = require('joi');
 
 // validation schema for user registration
 const validateUser = Joi.object({
-  firstname: Joi.string().required(),
-  lastname: Joi.string().required(),
-  username: Joi.string().alphanum().min(3).max(30)
-    .required(),
+  username: Joi.string().alphanum().min(3).max(30),
   email: Joi.string().email().required(),
   password: Joi.string()
     .min(8)
@@ -17,6 +14,8 @@ const validateUser = Joi.object({
       '"{#label}" must contain at least 1 lowercase letter, 1 uppercase letter, 1 number, 1 symbol, and be 8-40 characters.',
     )
     .required(),
+  profilePicUrl: Joi.string(),
+  bio: Joi.string(),
 });
 
 // validate schema for user login
