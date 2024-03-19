@@ -1,14 +1,15 @@
-const { db } = require('../utils/db');
+const { v4: uuidv4 } = require('uuid');
 const multer = require('multer');
-const { hashPassword, comparePassword, findUserByEmail, findUserById, createUserByEmailAndPassword } = require('../middlewares/auth');
+const { db } = require('../utils/db');
+const { 
+  hashPassword, comparePassword, findUserByEmail,
+  findUserById, createUserByEmailAndPassword
+} = require('../middlewares/auth');
 const {
   validateUser,
   validateLogin,
 } = require('../validations/usersValidations');
 const { uploadProfilePic } = require('../middlewares/fileUpload');
-
-// Tokens
-const { v4: uuidv4 } = require('uuid');
 const { generateTokens } = require('../utils/jwt');
 const {
   addRefreshTokenToWhitelist,
@@ -37,7 +38,7 @@ const registerUser = async (req, res) => {
     // Create user
     const user = await createUserByEmailAndPassword({
       email,
-      password: hashedPassword
+      password: hashedPassword,
     });
 
     // Generate tokens
@@ -49,7 +50,7 @@ const registerUser = async (req, res) => {
     return res.status(201).json({
       accessToken,
       refreshToken,
-      user
+      user,
     });
   } catch (error) {
     console.error('Error in registerUser:', error);
@@ -138,12 +139,16 @@ const loginUser = async (req, res) => {
   }
 };
 
-
 // Update user details for the settings page
 const updateSettings = async (req, res) => {
   try {
     // Destructure request body for clarity
-    const { username, email, password, bio } = req.body;
+    const { 
+      username,
+      email,
+      password,
+      bio 
+    } = req.body;
 
     // Hash the password if provided
     const hashedPassword = password ? await hashPassword(password) : undefined;
