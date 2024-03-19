@@ -3,9 +3,9 @@ const { v4: uuidv4 } = require('uuid');
 const multer = require('multer');
 const { db } = require('../utils/db');
 const { 
-  hashPassword, 
-  comparePassword, 
-  findUserByEmail, 
+  hashPassword,
+  comparePassword,
+  findUserByEmail,
   createUserByEmailAndPassword,
 } = require('../middlewares/auth');
 const {
@@ -72,7 +72,7 @@ const onBoarding = async (req, res) => {
   uploadProfilePic(req, res, async (err) => {
     try {
       // Check for Multer errors
-      if (err) {
+      if (err instanceof multer.MulterError) {
         console.error('Error uploading profile picture:', err);
         return res.status(500).json({ error: 'Internal server error' });
       }
@@ -136,7 +136,12 @@ const loginUser = async (req, res) => {
 const updateSettings = async (req, res) => {
   try {
     // Destructure request body for clarity
-    const { username, email, password, bio } = req.body;
+    const { 
+      username,
+      email,
+      password,
+      bio,
+    } = req.body;
 
     // Hash the password if provided
     const hashedPassword = password ? await hashPassword(password) : undefined;
@@ -144,7 +149,12 @@ const updateSettings = async (req, res) => {
     // Update user details in the database
     const updateUser = await db.User.update({
       where: { id: req.user.id },
-      data: { username, email, password: hashedPassword, bio },
+      data: {
+        username,
+        email,
+        password: hashedPassword,
+        bio,
+      },
     });
 
     // Handle profile picture upload using Multer
@@ -169,6 +179,7 @@ const updateSettings = async (req, res) => {
     return res.status(400).json({ error: error.message });
   }
 };
+
 
 // Get all users based on the username
 const getUsers = async (req, res) => {
