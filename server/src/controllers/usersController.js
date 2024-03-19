@@ -2,7 +2,7 @@
 const { v4: uuidv4 } = require('uuid');
 const multer = require('multer');
 const { db } = require('../utils/db');
-const { 
+const {
   hashPassword,
   comparePassword,
   findUserByEmail,
@@ -157,29 +157,37 @@ const updateSettings = async (req, res) => {
       },
     });
 
-    // Handle profile picture upload using Multer
-    uploadProfilePic(req, res, async (err) => {
-      if (err) {
-        console.error('Error uploading profile picture:', err);
-        return res.status(500).json({ error: 'Internal server error' });
-      }
+    // Define a helper function to upload profile picture
+    const uploadProfilePicAsync = async () => {
+      return new Promise((resolve, reject) => {
+        uploadProfilePic(req, res, (err) => {
+          if (err instanceof multer.MulterError) {
+            console.error('Error uploading profile picture:', err);
+            reject({ error: 'Internal server error' });
+            return;
+          }
+          resolve();
+        });
+      });
+    };
 
-      // Update profilePicUrl if a file was uploaded
-      if (req.file) {
-        updateUser.profilePicUrl = req.file.path;
-        await updateUser.save();
-      }
+    // Await profile picture upload
+    await uploadProfilePicAsync();
 
-      // Return updated user details
-      return res.status(200).json(updateUser);
-    });
+    // If a file was uploaded, update profilePicUrl
+    if (req.file) {
+      updateUser.profilePicUrl = req.file.path;
+      await updateUser.save();
+    }
+
+    // Return updated user details
+    return res.status(200).json(updateUser);
   } catch (error) {
     // Handle unexpected errors during settings update
     console.error('Error updating user settings:', error);
-    return res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message }); // Return error response
   }
 };
-
 
 // Get all users based on the username
 const getUsers = async (req, res) => {
