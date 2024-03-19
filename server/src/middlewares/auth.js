@@ -35,18 +35,23 @@ function findUserByEmail(email) {
 
 // Create user by email and password
 function createUserByEmailAndPassword(user) {
-  user.password = bcrypt.hashSync(user.password, 12);
-  return db.user.create({
+  return db.User.create({
     data: user,
   });
 }
 
 // find user by ID
 function findUserById(id) {
-  return db.user.findUnique({
+  return db.User.findUnique({
     where: {
       id,
     },
   });
 }
-module.exports = { hashPassword, comparePassword, findUserByEmail, findUserById, createUserByEmailAndPassword };
+module.exports = { 
+  hashPassword, 
+  comparePassword, 
+  findUserByEmail, 
+  findUserById, 
+  createUserByEmailAndPassword
+};
