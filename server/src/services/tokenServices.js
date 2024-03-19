@@ -7,12 +7,12 @@ function addRefreshTokenToWhitelist({ jti, refreshToken, userId }) {
     data: {
       id: jti,
       hashedToken: hashToken(refreshToken),
-      userId
+      userId,
     },
   });
 }
 
-console.log("got here");
+console.log('got here');
 // check if the token sent by the client is in the database.
 function findRefreshTokenById(id) {
   return db.refreshToken.findUnique({
@@ -29,8 +29,8 @@ function deleteRefreshToken(id) {
       id,
     },
     data: {
-      revoked: true
-    }
+      revoked: true,
+    },
   });
 }
 
@@ -38,16 +38,17 @@ function deleteRefreshToken(id) {
 function revokeTokens(userId) {
   return db.refreshToken.updateMany({
     where: {
-      userId
+      userId,
     },
     data: {
-      revoked: true
-    }
+      revoked: true,
+    },
   });
 }
+
 module.exports = {
   addRefreshTokenToWhitelist,
   findRefreshTokenById,
   deleteRefreshToken,
-  revokeTokens
+  revokeTokens,
 };
