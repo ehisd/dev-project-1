@@ -48,10 +48,10 @@ function findUserById(id) {
     },
   });
 }
-module.exports = { 
-  hashPassword, 
-  comparePassword, 
-  findUserByEmail, 
-  findUserById, 
-  createUserByEmailAndPassword
+module.exports = {
+  hashPassword,
+  comparePassword,
+  findUserByEmail,
+  findUserById,
+  createUserByEmailAndPassword,
 };
