@@ -1,9 +1,12 @@
+// Import required modules
 const { v4: uuidv4 } = require('uuid');
 const multer = require('multer');
 const { db } = require('../utils/db');
 const { 
-  hashPassword, comparePassword, findUserByEmail,
-  findUserById, createUserByEmailAndPassword
+  hashPassword, 
+  comparePassword, 
+  findUserByEmail, 
+  createUserByEmailAndPassword,
 } = require('../middlewares/auth');
 const {
   validateUser,
@@ -18,9 +21,10 @@ const {
 // Register User
 const registerUser = async (req, res) => {
   try {
-    // Get user input
+    // Extract email and password from request body
     const { email, password } = req.body;
-    // Validate request body against schema
+
+    // Validate user input
     const { error } = validateUser.validate({ email, password });
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
@@ -46,20 +50,20 @@ const registerUser = async (req, res) => {
     const { accessToken, refreshToken } = generateTokens(user, jti);
     await addRefreshTokenToWhitelist({ jti, refreshToken, userId: user.id });
 
-    // Return response
+    // Return success response with tokens and user details
     return res.status(201).json({
       accessToken,
       refreshToken,
       user,
     });
   } catch (error) {
+    // Handle unexpected errors
     console.error('Error in registerUser:', error);
     return res.status(400).json({ error: error.message });
   }
 };
 
-// Update user profile for the onboarding
-// Function to handle user profile update during onboarding process
+// Update user profile for the onboarding process
 const onBoarding = async (req, res) => {
   // Destructure request object for clarity
   const { body, file, user } = req;
@@ -68,30 +72,27 @@ const onBoarding = async (req, res) => {
   uploadProfilePic(req, res, async (err) => {
     try {
       // Check for Multer errors
-      if (err instanceof multer.MulterError) {
-        // Return error response for file upload error
-        return res.status(500).json({ error: 'File upload error' });
+      if (err) {
+        console.error('Error uploading profile picture:', err);
+        return res.status(500).json({ error: 'Internal server error' });
       }
 
       // Update user profile in the database
       const updatedUser = await db.User.update({
-        // Specify user ID for updating the correct user
-        where: {
-          id: user.id,
-        },
-        // Data to update in the user profile
+        where: { id: user.id },
         data: {
-          username: body.username, // Update username
-          bio: body.bio, // Update bio
-          profilePicUrl: file ? file.path : null, // Update profile picture URL if file is uploaded
+          username: body.username,
+          bio: body.bio,
+          profilePicUrl: file ? file.path : null,
         },
       });
 
       // Return success response with updated user details
       return res.status(200).json(updatedUser);
     } catch (error) {
-      // Return error response if an error occurs during the update process
-      return res.status(400).json({ Error: error.message });
+      // Handle unexpected errors during profile update
+      console.error('Error updating user profile:', error);
+      return res.status(500).json({ error: 'Internal server error' });
     }
   });
 };
@@ -105,21 +106,13 @@ const loginUser = async (req, res) => {
     // Validate user input
     const { error } = validateLogin.validate({ email, password });
     if (error) {
-      // Return validation error response
       return res.status(400).json({ error: error.details[0].message });
     }
 
     // Find user by email
     const existingUser = await findUserByEmail(email);
-    if (!existingUser) {
-      // Return authentication failure response if user not found
-      return res.status(401).json({ error: 'Invalid email or password.' });
-    }
-
-    // Compare password hash
-    const passwordMatch = await comparePassword(password, existingUser.password);
-    if (!passwordMatch) {
-      // Return authentication failure response if password does not match
+    // Return authentication failure response if user not found or password does not match
+    if (!existingUser || !(await comparePassword(password, existingUser.password))) {
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
@@ -143,35 +136,21 @@ const loginUser = async (req, res) => {
 const updateSettings = async (req, res) => {
   try {
     // Destructure request body for clarity
-    const { 
-      username,
-      email,
-      password,
-      bio 
-    } = req.body;
+    const { username, email, password, bio } = req.body;
 
     // Hash the password if provided
     const hashedPassword = password ? await hashPassword(password) : undefined;
 
     // Update user details in the database
     const updateUser = await db.User.update({
-      where: {
-        id: req.user.id,
-      },
-      data: {
-        username,
-        email,
-        password: hashedPassword,
-        bio,
-      },
+      where: { id: req.user.id },
+      data: { username, email, password: hashedPassword, bio },
     });
 
     // Handle profile picture upload using Multer
     uploadProfilePic(req, res, async (err) => {
-      if (err instanceof multer.MulterError) {
-        return res.status(500).json({ error: 'File upload error' });
-      }
       if (err) {
+        console.error('Error uploading profile picture:', err);
         return res.status(500).json({ error: 'Internal server error' });
       }
 
@@ -185,28 +164,29 @@ const updateSettings = async (req, res) => {
       return res.status(200).json(updateUser);
     });
   } catch (error) {
-    // Handle errors
-    return res.status(400).json({ Error: error.message });
+    // Handle unexpected errors during settings update
+    console.error('Error updating user settings:', error);
+    return res.status(400).json({ error: error.message });
   }
 };
-
 
 // Get all users based on the username
 const getUsers = async (req, res) => {
   try {
+    // Fetch users from database based on username query
     const users = await db.User.findMany({
-      where: {
-        username: {
-          contains: req.query.username,
-        },
-      },
+      where: { username: { contains: req.query.username } },
     });
+    // Return success response with users
     return res.status(200).json(users);
   } catch (error) {
-    return res.status(400).json({ Error: error.message });
+    // Handle unexpected errors during user retrieval
+    console.error('Error fetching users:', error);
+    return res.status(400).json({ error: error.message });
   }
 };
 
+// Export functions for use in other modules
 module.exports = {
   registerUser,
   loginUser,
