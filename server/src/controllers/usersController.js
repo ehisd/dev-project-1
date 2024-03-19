@@ -136,7 +136,7 @@ const loginUser = async (req, res) => {
 const updateSettings = async (req, res) => {
   try {
     // Destructure request body for clarity
-    const { 
+    const {
       username,
       email,
       password,
@@ -159,16 +159,20 @@ const updateSettings = async (req, res) => {
 
     // Define a helper function to upload profile picture
     const uploadProfilePicAsync = async () => {
-      return new Promise((resolve, reject) => {
-        uploadProfilePic(req, res, (err) => {
-          if (err instanceof multer.MulterError) {
-            console.error('Error uploading profile picture:', err);
-            reject({ error: 'Internal server error' });
-            return;
-          }
-          resolve();
+      try {
+        await new Promise((resolve, reject) => {
+          uploadProfilePic(req, res, (err) => {
+            if (err) {
+              console.error('Error uploading profile picture:', err);
+              reject(new Error('Internal server error'));
+              return;
+            }
+            resolve();
+          });
         });
-      });
+      } catch (error) {
+        throw new Error('Internal server error');
+      }
     };
 
     // Await profile picture upload
