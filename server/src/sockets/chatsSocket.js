@@ -1,5 +1,5 @@
-const messageController = require('../messagController');
 const io = require('socket.io')(server);
+const messageController = require('../controllers/messagController');
 
 // Chat socket to handle real-time messaging between authenticated users
 const chat = io.of('/chat');

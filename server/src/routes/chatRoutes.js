@@ -80,7 +80,7 @@ router.post('/decrypt', async (req, res) => {
     const { encryptedContent, userId } = req.body;
     const decryptedContent = await messageController.decryptMessage(
       encryptedContent,
-      userId
+      userId,
     );
     res.status(200).json({ decryptedContent });
   } catch (error) {

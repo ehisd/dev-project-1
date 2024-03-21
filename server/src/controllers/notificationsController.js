@@ -33,7 +33,7 @@ const notificationController = {
         where: { userId },
       });
 
-      res.status(200).json({ notifications: notifications });
+      res.status(200).json({ notifications });
     } catch (error) {
       console.error('Error retrieving notifications:', error);
       res.status(400).json({

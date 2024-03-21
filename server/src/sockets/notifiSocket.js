@@ -1,6 +1,6 @@
 // Chat notification socket to handle real-time notifications
-const messageController = require('../messagController');
 const io = require('socket.io')(server);
+const messageController = require('../controllers/messagController');
 
 // Notification socket to handle real-time notifications
 const notifications = io.of('/notifications');
@@ -30,7 +30,7 @@ notifications.on('connection', (socket) => {
       const message = await messageController.sendMessage(
         userId,
         data.recipientId,
-        data.content
+        data.content,
       );
 
       // Send the message to the recipient
