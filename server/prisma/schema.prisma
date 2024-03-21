@@ -14,26 +14,84 @@ datasource db {
 }
 
 model User {
-  id         String       @id @default(uuid())
-  username   String?   @unique
-  email      String    @unique
-  password   String
-  bio        String?
-  profilePicUrl String?
+  id                  String           @id @default(uuid())
+  username            String?          @unique
+  email               String           @unique
+  password            String
+  bio                 String?
+  profilePicUrl       String?
+  facebookId          String?          @unique
+  googleId            String?          @unique
+  stories             Story[]
+  liveStreams         LiveStream[]
+  sentMessages        Message[]        @relation("Sender")
+  receivedMessages    Message[]        @relation("Recipient")
+  liveStreamLikes     LiveStreamLike[]
+  liveStreamComments  LiveStreamComment[]
+  publicKey           String?
+  privateKey          String?
+  notifications       Notification[]
   refreshTokens RefreshToken[]
   createdAt     DateTime       @default(now())
-  updatedAt     DateTime?       @updatedAt 
-  sentMessages Message[] @relation("Sender")
-  receivedMessages Message[] @relation("Recipient")
+  updatedAt     DateTime?       @updatedAt
 }
+
+model Notification {
+  id        String       @id @default(uuid())
+  userId    String
+  message   String
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id])
+}
+
 model Message {
-  id              Int      @id @default(autoincrement())
+  id              String      @id @default(uuid())
   sender          User     @relation("Sender", fields: [senderId], references: [id])
   senderId        String
   recipient       User     @relation("Recipient", fields: [recipientId], references: [id])
   recipientId     String
   content         String
 }
+
+model Story {
+  id        String    @id @default(uuid())
+  content   String
+  imageUrl  String
+  owner     User      @relation(fields: [ownerId], references: [id])
+  ownerId   String
+  createdAt DateTime  @default(now())
+}
+model LiveStream {
+  id        String    @id @default(uuid())
+  title     String
+  url       String
+  owner     User      @relation(fields: [ownerId], references: [id])
+  ownerId   String
+  createdAt DateTime  @default(now())
+  // Define relations with likes and comments
+  likes     LiveStreamLike[]
+  comments  LiveStreamComment[]
+}
+
+model LiveStreamLike {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  stream    LiveStream @relation(fields: [streamId], references: [id])
+  streamId  String
+  createdAt DateTime @default(now())
+}
+
+model LiveStreamComment {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  stream    LiveStream @relation(fields: [streamId], references: [id])
+  streamId  String
+  content   String
+  createdAt DateTime @default(now())
+}
+
 model RefreshToken {
   id          String   @id @unique @default(uuid())
   hashedToken String
@@ -43,3 +101,4 @@ model RefreshToken {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
