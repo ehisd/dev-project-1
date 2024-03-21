@@ -1,9 +1,10 @@
 // Chat notification socket to handle real-time notifications
-const {Server} = require('socket.io');
+const { Server } = require('socket.io');
+const app = require('../index');
 const messageController = require('../controllers/messagController');
 
 // Create Socket.IO server
-const io = new Server(server);
+const io = new Server(app);
 
 // Notification socket to handle real-time notifications
 const notifications = io.of('/notifications');
