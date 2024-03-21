@@ -1,8 +1,8 @@
-// Chat notification socket to handle real-time notifications for authenticated users when a new message is received
-const messageController = require('../messageController');
+// Chat notification socket to handle real-time notifications
+const messageController = require('../messagController');
 const io = require('socket.io')(server);
 
-// Notification socket to handle real-time notifications for authenticated users when a new message is received
+// Notification socket to handle real-time notifications
 const notifications = io.of('/notifications');
 
 notifications.use((socket, next) => {
@@ -44,7 +44,7 @@ notifications.on('connection', (socket) => {
   socket.on('get messages', async (recipientId) => {
     try {
       // Get messages received by the user
-      const messages = await messageController.getReceivedMessages(userId);
+      const messages = await messageController.getReceivedMessages(recipientId);
 
       // Send the messages to the user
       socket.emit('messages', messages);

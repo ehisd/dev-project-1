@@ -1,6 +1,5 @@
 // Import required modules
 const express = require('express');
-const app = express();
 const EventEmitter = require('events');
 const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
@@ -11,6 +10,8 @@ const notificationRoutes = require('./routes/notificationRoutes');
 const liveStreamRoutes = require('./routes/liveStream');
 const { getComments, postComment } = require('./controllers/commentLiveStream');
 const { likeLiveStream, getLikes } = require('./controllers/likeLiveStream');
+
+const app = express();
 
 // Create an event emitter instance
 EventEmitter.defaultMaxListeners = 20;
@@ -34,6 +35,6 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Start the server
 const port = process.env.PORT || 3200;
-app.listen(port, () =>
-  console.log(`Server is running on http://localhost:${port}`)
-);
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});

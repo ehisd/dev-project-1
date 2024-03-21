@@ -1,6 +1,7 @@
 const express = require('express');
-const router = express.Router();
 const { createLiveStream } = require('../controllers/liveStream');
+
+const router = express.Router();
 
 // Endpoint to start a live stream with swagger annotation
 /**

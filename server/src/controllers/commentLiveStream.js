@@ -1,4 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
+
 const prisma = new PrismaClient();
 
 // Endpoint to post a comment on a live stream
@@ -37,4 +38,4 @@ const getComments = async (req, res) => {
   }
 };
 
-module.exports = { postComment, getComments }
+module.exports = { postComment, getComments };

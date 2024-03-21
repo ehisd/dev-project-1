@@ -1,6 +1,7 @@
 const express = require('express');
-const router = express.Router();
 const { likeLiveStream, getLikes } = require('../controllers/likeLiveStream');
+
+const router = express.Router();
 
 // Endpoint to like a live stream with swagger annotation
 /**

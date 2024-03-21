@@ -1,10 +1,11 @@
 const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
 const crypto = require('crypto');
+
+const prisma = new PrismaClient();
 
 const messageController = {
   // Function to send a message
-  sendMessage: async function (senderId, recipientId, content) {
+  sendMessage: async (senderId, recipientId, content) => {
     try {
       // Check if sender and recipient exist
       const sender = await prisma.User.findUnique({
@@ -24,8 +25,8 @@ const messageController = {
       // Create the message
       const message = await prisma.Message.create({
         data: {
-          senderId: senderId,
-          recipientId: recipientId,
+          senderId,
+          recipientId,
           content: encryptedContent,
         },
       });
@@ -38,7 +39,7 @@ const messageController = {
   },
 
   // Function to get messages received by a User
-  getReceivedMessages: async function (userId) {
+  getReceivedMessages: async (userId) => {
     try {
       // Get all messages where the User is the recipient
       const messages = await prisma.Message.findMany({
@@ -53,7 +54,7 @@ const messageController = {
   },
 
   // Function to encrypt message content
-  encryptMessage: async function (content, recipientId) {
+  encryptMessage: async (content, recipientId) => {
     try {
       // Load recipient's public key (Assuming it's stored in Prisma User model)
       const recipientPublicKey = await prisma.User.findUnique({
@@ -78,7 +79,7 @@ const messageController = {
   },
 
   // Function to decrypt message content
-  decryptMessage: async function (encryptedContent, userId) {
+  decryptMessage: async (encryptedContent, userId) => {
     try {
       // Load user's private key (Assuming it's stored in Prisma user model)
       const userPrivateKey = await prisma.User.findUnique({

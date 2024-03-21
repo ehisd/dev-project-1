@@ -37,7 +37,7 @@ model User {
 }
 
 model Notification {
-  id        Int       @id @default(autoincrement())
+  id        String       @id @default(uuid())
   userId    String
   message   String
   createdAt DateTime  @default(now())
@@ -52,7 +52,6 @@ model Message {
   recipientId     String
   content         String
 }
-
 
 model Story {
   id        String    @id @default(uuid())

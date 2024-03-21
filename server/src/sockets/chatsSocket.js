@@ -1,4 +1,4 @@
-const messageController = require('../messageController');
+const messageController = require('../messagController');
 const io = require('socket.io')(server);
 
 // Chat socket to handle real-time messaging between authenticated users
@@ -26,14 +26,14 @@ chat.on('connection', async (socket) => {
         // Encrypt the message content
         const encryptedContent = await messageController.encryptMessage(
           data.content,
-          data.recipientId
+          data.recipientId,
         );
 
         // Send the encrypted message to the recipient
         const message = await messageController.sendMessage(
           userId,
           data.recipientId,
-          encryptedContent
+          encryptedContent,
         );
 
         // Send the message to the recipient
@@ -56,15 +56,16 @@ chat.on('connection', async (socket) => {
         // Decrypt messages before sending
         const decryptedMessages = await Promise.all(
           messages.map(async (message) => {
+            const decryptedContent = await messageController.decryptMessage(
+              message.content,
+              message.senderId,
+            );
             return {
               ...message,
-              content: await messageController.decryptMessage(
-                message.content,
-                userId
-              ),
+              content: decryptedContent,
             };
-          })
-        );
+          }),
+        )
 
         // Send the decrypted messages to the user
         socket.emit('messages', decryptedMessages);

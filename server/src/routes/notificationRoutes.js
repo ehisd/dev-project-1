@@ -3,6 +3,7 @@ const {
   handleNewNotification,
   getNotifications,
 } = require('../controllers/notificationsController');
+
 const router = express.Router();
 
 // Define notification routes

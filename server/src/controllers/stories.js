@@ -1,6 +1,8 @@
+const multer = require('multer');
 const { PrismaClient } = require('@prisma/client');
-const prisma = PrismaClient();
 const { uploadProfilePic } = require('../middlewares/fileUpload');
+
+const prisma = PrismaClient();
 
 // Endpoint to post a story for the user and handle file upload
 const postStory = async (req, res) => {

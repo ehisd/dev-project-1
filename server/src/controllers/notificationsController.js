@@ -1,18 +1,17 @@
-// notificationController.js
-
 const { PrismaClient } = require('@prisma/client');
+
 const prisma = new PrismaClient();
 
 const notificationController = {
-  handleNewNotification: async function (req, res) {
+  handleNewNotification: async (req, res) => {
     try {
       const { userId, message } = req.body;
 
       // Create a new notification entry in the database
       await prisma.Notification.create({
         data: {
-          userId: userId,
-          message: message,
+          userId,
+          message,
         },
       });
 
@@ -25,24 +24,22 @@ const notificationController = {
     }
   },
 
-  getNotifications: async function (req, res) {
+  getNotifications: async (req, res) => {
     try {
-      const userId = req.params.userId;
+      const { userId } = req.params;
 
       // Retrieve notifications for the specified user
       const notifications = await prisma.Notification.findMany({
-        where: { userId: userId },
+        where: { userId },
       });
 
       res.status(200).json({ notifications: notifications });
     } catch (error) {
       console.error('Error retrieving notifications:', error);
-      res
-        .status(400)
-        .json({
-          error: 'Error retrieving notifications',
-          message: error.message,
-        });
+      res.status(400).json({
+        error: 'Error retrieving notifications',
+        message: error.message,
+      });
     }
   },
 };
