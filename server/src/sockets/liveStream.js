@@ -1,15 +1,15 @@
 const { Server } = require('socket.io');
-const app = require('../index');
 const { PrismaClient } = require('@prisma/client');
+const app = require('../index');
 
 const prisma = new PrismaClient();
 
 const io = new Server(app);
 
 // Define namespace for live streams
-const liveStreamNamespace = io.of('/liveStream');
+const liveStreamSocket = io.of('/liveStream');
 
-liveStreamNamespace.use((socket, next) => {
+liveStreamSocket.use((socket, next) => {
   // Check if user is authenticated
   if (socket.handshake.auth.token) {
     return next();
@@ -17,7 +17,7 @@ liveStreamNamespace.use((socket, next) => {
   return next(new Error('Authentication error'));
 });
 
-liveStreamNamespace.on('connection', (socket) => {
+liveStreamSocket.on('connection', (socket) => {
   // Get user ID from the token
   const userId = socket.handshake.auth.token;
 
@@ -37,7 +37,7 @@ liveStreamNamespace.on('connection', (socket) => {
       });
 
       // Broadcast live stream start event to all clients
-      liveStreamNamespace.emit('streamStarted', {
+      liveStreamSocket.emit('streamStarted', {
         message: 'Live stream started successfully',
         liveStream: newLiveStream,
       });
@@ -59,7 +59,7 @@ liveStreamNamespace.on('connection', (socket) => {
       });
 
       // Broadcast like event to all clients
-      liveStreamNamespace.emit('streamLiked', like);
+      liveStreamSocket.emit('streamLiked', like);
     } catch (error) {
       console.error('Error liking live stream:', error);
       socket.emit('likeError', { error: 'Failed to like live stream' });
@@ -99,7 +99,7 @@ liveStreamNamespace.on('connection', (socket) => {
       });
 
       // Broadcast comment event to all clients
-      liveStreamNamespace.emit('commentPosted', comment);
+      liveStreamSocket.emit('commentPosted', comment);
     } catch (error) {
       console.error('Error posting comment on live stream:', error);
       socket.emit('commentError', {

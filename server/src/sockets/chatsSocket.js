@@ -68,7 +68,7 @@ chat.on('connection', async (socket) => {
               ...message,
               content: decryptedContent,
             };
-          })
+          }),
         );
 
         // Send the decrypted messages to the user
