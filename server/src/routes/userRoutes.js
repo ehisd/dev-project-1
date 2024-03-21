@@ -8,9 +8,7 @@ const {
 } = require('../controllers/usersController');
 const { uploadProfilePic } = require('../middlewares/fileUpload');
 
-const app = express();
-
-app.use(express.json());
+const router = express.Router();
 
 // Annotate your API route files with Swagger annotations to describe the endpoints
 /**
@@ -36,7 +34,7 @@ app.use(express.json());
  *       400:
  *         description: Error creating user
  */
-app.post('/register', registerUser);
+router.post('/register', registerUser);
 
 // Annotate logging in a user
 /**
@@ -62,7 +60,7 @@ app.post('/register', registerUser);
  *       400:
  *         description: Error logging in user
  */
-app.post('/login', loginUser);
+router.post('/login', loginUser);
 
 // Annotate getting the list of users based on the username
 /**
@@ -77,15 +75,17 @@ app.post('/login', loginUser);
  *       400:
  *         description: Error retrieving users
  */
-app.get('/users', getUsers);
+router.get('/users', getUsers);
 
 // Annotate updating user details for the settings page
 /**
  * @swagger
  * /settings:
  *   put:
- *     summary: Update user details
- *     description: Update user details
+ *     summary: Update user settings
+ *     description: Update user settings
+ *     security:
+ *      - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -95,21 +95,15 @@ app.get('/users', getUsers);
  *             properties:
  *               username:
  *                 type: string
- *               email:
- *                 type: string
- *               password:
- *                 type: string
  *               bio:
- *                 type: string
- *               profilePicUrl:
  *                 type: string
  *     responses:
  *       200:
- *         description: User details updated successfully
+ *         description: User settings updated successfully
  *       400:
- *         description: Error updating user details
+ *         description: Error updating user settings
  */
-app.put('/settings', updateSettings);
+router.put('/settings', updateSettings);
 
 // Annotate Onboarding route with profile picture upload
 /**
@@ -118,6 +112,8 @@ app.put('/settings', updateSettings);
  *   post:
  *     summary: Onboarding
  *     description: Onboarding
+ *     security:
+ *      - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -142,6 +138,6 @@ app.put('/settings', updateSettings);
  *       400:
  *         description: Error onboarding user
  */
-app.post('/onboarding', uploadProfilePic, onBoarding);
+router.post('/onboarding', uploadProfilePic, onBoarding);
 
-module.exports = app;
+module.exports = router;

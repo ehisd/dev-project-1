@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const { db } = require('../utils/db');
 
 const saltRounds = 10;
 
@@ -6,9 +7,9 @@ const saltRounds = 10;
 async function hashPassword(password) {
   try {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-    return (hashedPassword);
+    return hashedPassword;
   } catch (error) {
-    return (`Internal server error from hashing password: ${error}`);
+    return `Internal server error from hashing password: ${error}`;
   }
 }
 
@@ -16,13 +17,41 @@ async function hashPassword(password) {
 async function comparePassword(password, hash) {
   try {
     const hashedPassword = await bcrypt.compare(password, hash);
-    if (!hashedPassword) {
-      return false;
-    }
-    return true;
+    return hashedPassword;
   } catch (error) {
-    return (`Internal server error from comparing password: ${error}`);
+    console.error('Error comparing passwords:', error);
+    throw new Error(`Internal server error from comparing passwords: ${error}`);
   }
 }
 
-module.exports = { hashPassword, comparePassword };
+// Find user by email
+function findUserByEmail(email) {
+  return db.User.findUnique({
+    where: {
+      email,
+    },
+  });
+}
+
+// Create user by email and password
+function createUserByEmailAndPassword(user) {
+  return db.User.create({
+    data: user,
+  });
+}
+
+// find user by ID
+function findUserById(id) {
+  return db.User.findUnique({
+    where: {
+      id,
+    },
+  });
+}
+module.exports = {
+  hashPassword,
+  comparePassword,
+  findUserByEmail,
+  findUserById,
+  createUserByEmailAndPassword,
+};
